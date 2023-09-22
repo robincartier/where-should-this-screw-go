@@ -26,19 +26,32 @@ function App() {
         picture: source,
     }]);
 
+    const data = new FormData();
+
+    data.append('picture', e.target.picture.files[0]);
+    data.append('tags', e.target.tags.value);
+
     const requestOptions = {
       method: 'POST',
       // mode: 'no-cors', 
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id: stepCounter,
-        tags: e.target.tags.value,
-      })
+      headers: {  },
+      // body: JSON.stringify({
+      //   id: stepCounter,
+      //   tags: e.target.tags.value,
+      //   image: source
+      // })
+      body: data,
     };
 
-    fetch('http://localhost:3000/steps', requestOptions)
-      .then(response => response.json())
-      .then(data => console.log(data))
+    try {
+      const response = await fetch('http://localhost:3000/steps', requestOptions);
+      if (response.status === 200) {
+        const json = await response.json();
+        console.log(json);
+      }
+    } catch (error) {
+      console.error(error)
+    }
 
     setStepCounter(stepCounter + 1)
 

@@ -1,4 +1,7 @@
 const express = require('express');
+const multer  = require('multer');
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
 
 const db = require('./db');
 const stepsController = require("./controller/stepsController");
@@ -15,7 +18,7 @@ app.use(function(req, res, next) {
   next();
 }),
 
-stepsController(app);
+stepsController(app, upload);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
