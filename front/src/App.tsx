@@ -1,12 +1,10 @@
 import { FormEvent, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 type Step = {
   id: number
   tags: string,
-  picture: string,
+  image: string,
 }
 
 function App() {
@@ -18,28 +16,14 @@ function App() {
 
     if (e.target.tags == undefined || !e.target.tags.value) return;
 
-    setSteps([
-      ...steps,
-      {
-        id: stepCounter,
-        tags: e.target.tags.value,
-        picture: source,
-    }]);
-
     const data = new FormData();
 
-    data.append('picture', e.target.picture.files[0]);
+    data.append('image', e.target.image.files[0]);
     data.append('tags', e.target.tags.value);
 
     const requestOptions = {
       method: 'POST',
-      // mode: 'no-cors', 
       headers: {  },
-      // body: JSON.stringify({
-      //   id: stepCounter,
-      //   tags: e.target.tags.value,
-      //   image: source
-      // })
       body: data,
     };
 
@@ -47,21 +31,18 @@ function App() {
       const response = await fetch('http://localhost:3000/steps', requestOptions);
       if (response.status === 200) {
         const json = await response.json();
-        console.log(json);
+
+        setSteps([
+          ...steps,
+          {...json.rows[0]}
+        ]);
+
       }
     } catch (error) {
       console.error(error)
     }
 
     setStepCounter(stepCounter + 1)
-
-    // try {
-    //   await submitForm(answer);
-    //   setStatus('success');
-
-    // } catch (err) {
-    //   setStatus('typing');
-    // }
   }
 
   return (
@@ -104,10 +85,10 @@ function Form({ handleSubmit }: { handleSubmit: (e: FormEvent<HTMLFormElement>, 
 
   return (
     <form onSubmit={(e) => handleSubmit(e, source)}>
-      <label htmlFor="picture">Picture:</label>
+      <label htmlFor="image">Picture:</label>
       <input 
         type="file" 
-        name="picture"
+        name="image"
         accept="image/*" 
         capture="environment" 
         onChange={(e) => handleCapture(e.target)} 
@@ -138,7 +119,7 @@ function Steps({ steps }: { steps: Step[] }) {
 function Step({step}: { step: Step }) {
   return (
     <li>
-      <img src={step.picture} height="50" width="50"/>
+      <img src={`data:image/png;base64,${step.image}`} height="50" width="50"/>
       <p>
         {step.tags}
       </p>
