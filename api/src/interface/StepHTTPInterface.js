@@ -11,15 +11,9 @@ class StepHTTPAdapter extends StepInterface {
     }
 
     async addStep(step) {
-        const id = await this.domain.addStep(step);
+        const stepEntity = await this.domain.addStep(step);
 
-        return id;
-    }
-
-    async getStep(id) {
-        const step = await this.domain.getStep(id);
-
-        return step;
+        return stepEntity;
     }
 
     initStepRouting(app, upload) {

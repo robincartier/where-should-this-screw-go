@@ -4,8 +4,6 @@ class StepInterface {
     }
 
     async addStep(step) {}
-
-    async getStep(id) {}
 }
 
 module.exports = StepInterface;
