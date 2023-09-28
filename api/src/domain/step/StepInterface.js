@@ -1,4 +1,4 @@
-class StepUserInterface {
+class StepInterface {
     constructor(domain) {
         this.domain = domain;
     }
@@ -8,4 +8,4 @@ class StepUserInterface {
     async getStep(id) {}
 }
 
-module.exports = StepUserInterface;
+module.exports = StepInterface;

@@ -3,9 +3,9 @@ const multer  = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const StepDataAdapter = require("./step/StepDBAdapter");
-const step = require("./step/index");
-const StepUserAdapter = require("./step/StepHTTPAdapter");
+const StepDataAdapter = require("./repository/StepRepository");
+const StepUseCases = require("./domain/step/StepUseCases");
+const StepUserAdapter = require("./interface/StepHTTPAdapter");
 
 const db = require("./db");
 
@@ -21,9 +21,9 @@ app.use(function(req, res, next) {
 
 const stepDataAdapter = new StepDataAdapter(db);
 
-const stepDomain = step(stepDataAdapter);
+const stepUseCases = new StepUseCases(stepDataAdapter);
 
-new StepUserAdapter(stepDomain, app, upload);
+new StepUserAdapter(stepUseCases, app, upload);
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);

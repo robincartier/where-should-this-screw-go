@@ -1,4 +1,4 @@
-class StepDataInterface {
+class StepRepository {
     setStep(tags, image) {
     }
 
@@ -7,4 +7,4 @@ class StepDataInterface {
 
 }
 
-module.exports = StepDataInterface;
+module.exports = StepRepository;
