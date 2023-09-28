@@ -1,8 +1,7 @@
-const formidable = require("formidable");
-const { query } = require('express-validator');
+// const formidable = require("formidable");
+// const { query } = require("express-validator");
 
 const stepsRepository = require("../repository/stepsRepository");
-var fetch = require ('node-fetch');
 
 
 class Step {
@@ -11,7 +10,7 @@ class Step {
         this._image = image;
     }
 
-    _tags
+    _tags;
     get tags() {
         return this._tags;
     }
@@ -19,7 +18,7 @@ class Step {
         this._tags = tags;
     }
 
-    _image
+    _image;
     get image() {
         return this._image;
     }
@@ -32,7 +31,7 @@ class Step {
 module.exports = (app, upload) => {
     app.post("/steps", 
     // query("tags").trim().notEmpty().escape(),
-        upload.single('image'),
+        upload.single("image"),
         async (req, res) => {
 
             if (!req.body.tags) {
@@ -48,16 +47,15 @@ module.exports = (app, upload) => {
                 
                 const uploadResponse = await stepsRepository.setStep(step);
                 const downloadResponse = await stepsRepository.getStep(uploadResponse.rows[0].id);
-                console.log( downloadResponse.rows[0].image)
 
                 downloadResponse.rows[0].image = downloadResponse.rows[0].image.toString("base64");
 
                 res.send(downloadResponse);
             } catch (err) {
                 console.error(err);
-                res.status(500).send('Internal Server Error');
+                res.status(500).send("Internal Server Error");
             }
             
         }
     );
-}
+};
