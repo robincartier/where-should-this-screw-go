@@ -4,7 +4,7 @@ type StepType = {
     image: string,
 }
 
-function Step({step}: { step: StepType }) {
+function Step({ step }: { step: StepType }) {
     return (
         <li>
             <img src={`data:image/png;base64,${step.image}`} height="50" width="50"/>
@@ -28,5 +28,5 @@ function Steps({ steps }: { steps: StepType[] }) {
     );
 }
 
-export type {StepType};
-export {Steps};
+export type { StepType };
+export { Steps };

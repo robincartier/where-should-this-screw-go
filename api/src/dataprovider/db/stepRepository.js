@@ -1,10 +1,10 @@
-const { query } = require ("../db");
+const { query } = require ("./db");
 
 module.exports = {
-    setStep(step) {
-        return  query(
+    setStep(tags, image) {
+        return query(
             "INSERT INTO steps(tags, image) VALUES ($1, $2) RETURNING id",
-            [step.tags, step.image]
+            [tags, image]
         );
     },
 

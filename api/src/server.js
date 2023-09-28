@@ -3,14 +3,14 @@ const multer  = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// eslint-disable-next-line no-unused-vars
-const db = require("./db");
-const stepsController = require("./controller/stepsController");
+
+require("./dataprovider/db/db");
+const stepsController = require("./interface/http/stepsController");
 
 const app = express();
 const port = 3000;
 
-app.use(express.json());
+// app.use(express.json());
 
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");

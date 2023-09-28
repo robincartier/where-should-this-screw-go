@@ -19,13 +19,13 @@ function App() {
         };
 
         try {
-            const response = await fetch("http://localhost:3000/steps", requestOptions);
+            const response = await fetch("http://localhost:3000/step", requestOptions);
             if (response.status === 200) {
-                const json = await response.json();
+                const step = await response.json();
 
                 setSteps([
                     ...steps,
-                    {...json.rows[0]}
+                    { ...step }
                 ]);
 
             }
