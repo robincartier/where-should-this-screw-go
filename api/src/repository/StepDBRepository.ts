@@ -1,21 +1,22 @@
-const StepRepository = require("../domain/step/StepRepository");
-const StepEntity = require("../domain/step/StepEntity");
+import StepRepository from "../domain/step/StepRepository";
+import StepEntity from "../domain/step/StepEntity";
 
-class StepDBAdapter extends StepRepository {
+class StepDBRepository implements StepRepository {
+
+    db;
+    
     constructor(db) {
-        super();
-
         this.db = db;
     }
-
-    async addStep(step) {
+    
+    async addStep(step: StepEntity): Promise<number> {
         const dbo = await this.addStepToDB(step);
 
         const id = StepEntity.fromDboAdd(dbo);
         return id;
     }
 
-    async getStep(id) {
+    async getStep(id: number): Promise<StepEntity> {
         const dbo = await this.getStepFromDB(id);
 
         return StepEntity.fromDboGet(dbo);
@@ -36,4 +37,4 @@ class StepDBAdapter extends StepRepository {
     }
 }
 
-module.exports = StepDBAdapter;
+export default StepDBRepository;

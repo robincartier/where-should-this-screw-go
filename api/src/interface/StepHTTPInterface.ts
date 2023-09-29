@@ -1,16 +1,17 @@
-const { ERRORS } = require("../error");
-const StepInterface = require("../domain/step/StepInterface");
-const StepEntity = require("../domain/step/StepEntity");
+import StepInterface from "../domain/step/StepInterface";
+import StepEntity from "../domain/step/StepEntity";
 
-class StepHTTPAdapter extends StepInterface {
+class StepHTTPAdapter implements StepInterface {
+
+    domain;
 
     constructor(domain, app, upload) {
-        super(domain);
+        this.domain = domain;
 
         this.initStepRouting(app, upload);
     }
 
-    async addStep(step) {
+    async addStep(step: StepEntity): Promise<StepEntity> {
         const stepEntity = await this.domain.addStep(step);
 
         return stepEntity;
@@ -36,11 +37,11 @@ class StepHTTPAdapter extends StepInterface {
                     
                     res.send(addedStepEntity.toDto());
                 } catch (error) {
-                    res.status(ERRORS[error.cause].http).send(ERRORS[error.cause].message);
+                    res.status(error.http).send(error.message);
                 }
             }
         );
     }
 }
 
-module.exports = StepHTTPAdapter;
+export default StepHTTPAdapter;

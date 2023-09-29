@@ -1,4 +1,4 @@
-const { ERRORS } = require("../../error");
+import { ERRORS } from "../../error";
 
 class Step {
     constructor({ image, tags, id }) {
@@ -39,7 +39,7 @@ class Step {
                 id: dto.body.id,
             });
         } catch (error) {
-            throw new Error("format", { cause: ERRORS.INVALID_FORMAT.code });
+            throw ERRORS.INVALID_FORMAT;
         }
     }
 
@@ -64,4 +64,4 @@ class Step {
     }
 }
 
-module.exports = Step;
+export default Step;

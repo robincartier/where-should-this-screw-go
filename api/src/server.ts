@@ -1,7 +1,9 @@
-const express = require("express");
-const multer  = require("multer");
+import express from "express";
+import multer from "multer";
 
 class Server {
+
+    port;
 
     _app;
     get app() {
@@ -42,4 +44,4 @@ class Server {
 
 }
 
-module.exports = Server;
+export default Server;

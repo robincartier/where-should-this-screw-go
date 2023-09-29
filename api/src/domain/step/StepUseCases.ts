@@ -1,6 +1,9 @@
-const { ERRORS } = require("../../error");
+import { ERRORS } from "../../error";
 
 class StepUseCases {
+
+    dataInterface;
+
     constructor(dataInterface) {
         this.dataInterface = dataInterface;
     }
@@ -13,9 +16,9 @@ class StepUseCases {
     
             return addedStepEntity;
         } catch (error) {
-            throw new Error("internal", { cause: ERRORS.INTERNAL.code });
+            throw ERRORS.INTERNAL;
         }
     }
 }
 
-module.exports = StepUseCases;
+export default StepUseCases;
