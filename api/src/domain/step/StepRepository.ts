@@ -5,6 +5,7 @@ interface StepRepository {
 
     getStep: (id: number) => Promise<StepEntity>
 
+    getSteps: () => Promise<StepEntity[]>
 }
 
 export default StepRepository;

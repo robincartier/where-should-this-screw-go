@@ -56,11 +56,13 @@ class Step {
     }
 
     static fromDboGet(dbo: DboGetStep) {
-        return new Step({
-            image: dbo.rows[0].image.toString("base64") as Base64,
-            tags: dbo.rows[0].tags,
-            id: dbo.rows[0].id
-        });
+        return dbo.rows.map(row => (
+            new Step({
+                image: row.image.toString("base64") as Base64,
+                tags: row.tags,
+                id: row.id
+            })
+        ));
     }
 }
 

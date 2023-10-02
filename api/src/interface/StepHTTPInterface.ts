@@ -22,6 +22,12 @@ class StepHTTPInterface implements StepInterface {
         return stepEntity;
     }
 
+    async getSteps(): Promise<StepEntity[]> {
+        const stepEntities = await this.domain.getSteps();
+
+        return stepEntities;
+    }
+
     initStepRouting() {
         this.server.app.post("/step", 
         // query("tags").trim().notEmpty().escape(),
@@ -36,6 +42,21 @@ class StepHTTPInterface implements StepInterface {
                     const addedStepEntity = await this.addStep(stepEntity);
                     
                     res.send(addedStepEntity.toDto());
+                } catch (error) {
+                    const standardError = error as ErrorType;
+                    res.status(standardError.http).send(standardError.message);
+                }
+            }
+        );
+
+        this.server.app.get("/steps", 
+        // query("tags").trim().notEmpty().escape(),
+            async (_req: Request, res: Response) => {
+
+                try {
+                    const stepEntities = await this.getSteps();
+                    
+                    res.send(stepEntities.map(entity => entity.toDto()));
                 } catch (error) {
                     const standardError = error as ErrorType;
                     res.status(standardError.http).send(standardError.message);

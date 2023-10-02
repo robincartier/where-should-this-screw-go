@@ -19,6 +19,12 @@ class StepDBRepository implements StepRepository {
     async getStep(id: number): Promise<StepEntity> {
         const dbo: DboGetStep = await this.getStepFromDB(id);
 
+        return StepEntity.fromDboGet(dbo)[0];
+    }
+
+    async getSteps(): Promise<StepEntity[]> {
+        const dbo: DboGetStep = await this.getStepsFromDB();
+
         return StepEntity.fromDboGet(dbo);
     }
 
@@ -33,6 +39,13 @@ class StepDBRepository implements StepRepository {
         return this.db.query(
             "SELECT * FROM steps WHERE id = $1",
             [id]
+        );
+    }
+
+    getStepsFromDB() {
+        return this.db.query(
+            "SELECT * FROM steps",
+            []
         );
     }
 }

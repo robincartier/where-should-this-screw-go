@@ -20,6 +20,16 @@ class StepUseCases {
             throw ERRORS.INTERNAL;
         }
     }
+
+    async getSteps() {
+        try {
+            const stepsEntities = await this.repository.getSteps();
+    
+            return stepsEntities;
+        } catch (error) {
+            throw ERRORS.INTERNAL;
+        }
+    }
 }
 
 export default StepUseCases;

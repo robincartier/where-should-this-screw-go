@@ -20,4 +20,7 @@ declare global {
         file: Express.Multer.File,
         body: { tags: string, id: number }
     }
+
+    export interface GetStepsRequest extends Request {
+    }
 }
