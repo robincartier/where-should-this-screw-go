@@ -1,22 +1,28 @@
+import { useState } from "react";
+
 function Form({ handleSubmit }: { handleSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void> }) {
-  
-    const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    const [pictureSrc, setPictureSrc] = useState("");
+
+    function _handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        handleSubmit(e).then(() => {
+            setPictureSrc("");
+        });
+    }
+
+    function handleCapture(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
             if (e.target.files.length !== 0) {
                 const file = e.target.files[0];
                 const newUrl = URL.createObjectURL(file);
   
-                if (!document) return;
-  
-                const pictureElement = document.getElementById("form-picture")!;
-                pictureElement.setAttribute("src", newUrl);
-                pictureElement.setAttribute("style", "");
+                setPictureSrc(newUrl);
             }
         }
-    };
+    }
   
     return (
-        <form onSubmit={(e) => handleSubmit(e)}>
+        <form onSubmit={(e) => _handleSubmit(e)}>
             <label htmlFor="image">Picture:</label>
             <input 
                 type="file" 
@@ -25,7 +31,7 @@ function Form({ handleSubmit }: { handleSubmit: (e: React.FormEvent<HTMLFormElem
                 capture="environment" 
                 onChange={(e) => handleCapture(e)} 
             />
-            <img id="form-picture" height="50" width="50" style={{ display:"none" }} />
+            <img id="form-picture" height="50" width="50" src={pictureSrc} />
             <label htmlFor="tags">Tags: </label>
             <textarea name="tags" id="tags"></textarea>
             <div>

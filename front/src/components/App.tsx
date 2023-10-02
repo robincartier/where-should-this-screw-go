@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./App.css";
+import "../style/App.css";
 
 import { Steps, StepType } from "./Step";
 import Form from "./Form";
@@ -29,7 +29,9 @@ function App() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
-        const data = new FormData(e.target as HTMLFormElement);
+        const form = e.target as HTMLFormElement;
+
+        const data = new FormData(form);
 
         const requestOptions = {
             method: "POST",
@@ -48,6 +50,8 @@ function App() {
                 ]);
 
             }
+
+            form.reset();
         } catch (error) {
             console.error(error);
         }

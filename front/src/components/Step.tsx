@@ -1,3 +1,5 @@
+import "../style/Step.css";
+
 type StepType = {
     id: number
     tags: string,
@@ -6,8 +8,8 @@ type StepType = {
 
 function Step({ step }: { step: StepType }) {
     return (
-        <li>
-            <img src={`data:image/png;base64,${step.image}`} height="50" width="50"/>
+        <li className="step">
+            <img src={`data:image/png;base64,${step.image}`}/>
             <p>
                 {step.tags}
             </p>
@@ -17,7 +19,7 @@ function Step({ step }: { step: StepType }) {
 
 function Steps({ steps }: { steps: StepType[] }) {
     return (
-        <ul>
+        <ul className="steps">
             {steps.map(step => 
                 <Step
                     key={step.id}
