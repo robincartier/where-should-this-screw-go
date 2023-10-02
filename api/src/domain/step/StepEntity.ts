@@ -1,7 +1,7 @@
 import { ERRORS } from "../../error";
 
 class Step {
-    constructor({ image, tags, id }) {
+    constructor({ image, tags, id }: { image: Base64, tags: string, id: number }) {
         this._tags = tags;
         this._image = image;
         this._id = id;
@@ -31,10 +31,10 @@ class Step {
         this._id = id;
     }
 
-    static fromDto(dto) {
+    static fromDto(dto: PostStepRequest) {
         try {
             return new Step({
-                image: dto.file.buffer,
+                image: dto.file.buffer as unknown as Base64,
                 tags: dto.body.tags,
                 id: dto.body.id,
             });
@@ -51,13 +51,13 @@ class Step {
         };
     }
 
-    static fromDboAdd(dbo) {
+    static fromDboAdd(dbo: DboPostStep) {
         return dbo.rows[0].id;
     }
 
-    static fromDboGet(dbo) {
+    static fromDboGet(dbo: DboGetStep) {
         return new Step({
-            image: dbo.rows[0].image.toString("base64"),
+            image: dbo.rows[0].image.toString("base64") as Base64,
             tags: dbo.rows[0].tags,
             id: dbo.rows[0].id
         });

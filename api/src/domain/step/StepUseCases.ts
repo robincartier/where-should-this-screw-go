@@ -1,18 +1,19 @@
 import { ERRORS } from "../../error";
+import StepRepository from "./StepRepository";
+import StepEntity from "./StepEntity";
 
 class StepUseCases {
+    repository;
 
-    dataInterface;
-
-    constructor(dataInterface) {
-        this.dataInterface = dataInterface;
+    constructor(repository: StepRepository) {
+        this.repository = repository;
     }
 
-    async addStep(step) {
+    async addStep(step: StepEntity) {
         try {
-            const id = await this.dataInterface.addStep(step);
+            const id = await this.repository.addStep(step);
     
-            const addedStepEntity = await this.dataInterface.getStep(id);
+            const addedStepEntity = await this.repository.getStep(id);
     
             return addedStepEntity;
         } catch (error) {

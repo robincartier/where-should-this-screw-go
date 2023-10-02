@@ -1,14 +1,19 @@
 import StepInterface from "../domain/step/StepInterface";
 import StepEntity from "../domain/step/StepEntity";
-
-class StepHTTPAdapter implements StepInterface {
+import { ErrorType } from "../error";
+import Server from "../server";
+import StepUseCases from "../domain/step/StepUseCases";
+import { Request, Response } from "express";
+class StepHTTPInterface implements StepInterface {
 
     domain;
+    server;
 
-    constructor(domain, app, upload) {
+    constructor(domain: StepUseCases, server: Server) {
         this.domain = domain;
+        this.server = server;
 
-        this.initStepRouting(app, upload);
+        this.initStepRouting();
     }
 
     async addStep(step: StepEntity): Promise<StepEntity> {
@@ -17,31 +22,27 @@ class StepHTTPAdapter implements StepInterface {
         return stepEntity;
     }
 
-    initStepRouting(app, upload) {
-        app.post("/step", 
+    initStepRouting() {
+        this.server.app.post("/step", 
         // query("tags").trim().notEmpty().escape(),
-            upload.single("image"),
-            async (req, res) => {
+            this.server.upload.single("image"),
+            async (req: Request, res: Response) => {
     
-                const dto = req;
+                const dto = req as PostStepRequest;
     
                 try {
                     const stepEntity = StepEntity.fromDto(dto);
                     
                     const addedStepEntity = await this.addStep(stepEntity);
                     
-                    if (addedStepEntity === null) {
-                        res.status(500).send("Internal Server Error");
-                        return;
-                    }
-                    
                     res.send(addedStepEntity.toDto());
                 } catch (error) {
-                    res.status(error.http).send(error.message);
+                    const standardError = error as ErrorType;
+                    res.status(standardError.http).send(standardError.message);
                 }
             }
         );
     }
 }
 
-export default StepHTTPAdapter;
+export default StepHTTPInterface;

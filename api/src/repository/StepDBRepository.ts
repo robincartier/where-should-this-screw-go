@@ -1,11 +1,11 @@
 import StepRepository from "../domain/step/StepRepository";
 import StepEntity from "../domain/step/StepEntity";
-
+import { dbType } from "../db";
 class StepDBRepository implements StepRepository {
 
     db;
     
-    constructor(db) {
+    constructor(db: dbType) {
         this.db = db;
     }
     
@@ -17,19 +17,19 @@ class StepDBRepository implements StepRepository {
     }
 
     async getStep(id: number): Promise<StepEntity> {
-        const dbo = await this.getStepFromDB(id);
+        const dbo: DboGetStep = await this.getStepFromDB(id);
 
         return StepEntity.fromDboGet(dbo);
     }
 
-    addStepToDB(dbo) {
+    addStepToDB(step: StepEntity) {
         return this.db.query(
             "INSERT INTO steps(tags, image) VALUES ($1, $2) RETURNING id",
-            [dbo.tags, dbo.image]
+            [step.tags, step.image]
         );
     }
 
-    getStepFromDB(id) {
+    getStepFromDB(id: number) {
         return this.db.query(
             "SELECT * FROM steps WHERE id = $1",
             [id]

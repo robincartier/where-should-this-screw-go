@@ -13,6 +13,6 @@ const stepDataAdapter = new StepDataAdapter(db);
 
 const stepUseCases = new StepUseCases(stepDataAdapter);
 
-new StepHTTPInterface(stepUseCases, server.app, server.upload);
+new StepHTTPInterface(stepUseCases, server);
 
 server.startServer();

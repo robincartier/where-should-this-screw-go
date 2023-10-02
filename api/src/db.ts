@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, QueryResult } from "pg";
 
 const pool = new Pool({
     user: "postgres",
@@ -9,5 +9,9 @@ const pool = new Pool({
 });
 
 export default {
-    query: (text, params) => pool.query(text, params)
+    query: (text: string, params: (string | number | boolean)[]) => pool.query(text, params)
+};
+
+export type dbType = {
+    query: (text: string, params: (string | number | boolean)[]) => Promise<QueryResult>
 };

@@ -1,11 +1,11 @@
-import express from "express";
-import multer from "multer";
+import express, { Express } from "express";
+import multer, { Multer } from "multer";
 
 class Server {
 
-    port;
+    port = 3000;
 
-    _app;
+    _app!: Express;
     get app() {
         return this._app;
     }
@@ -13,7 +13,7 @@ class Server {
         this._app = app;
     }
     
-    _upload;
+    _upload!: Multer;
     get upload() {
         return this._upload;
     }
@@ -26,9 +26,8 @@ class Server {
         this.upload = multer({ storage: storage });
 
         this.app = express();
-        this.port = 3000;
 
-        this.app.use(function(req, res, next) {
+        this.app.use(function(_req, res, next) {
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PUT,DELETE");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
