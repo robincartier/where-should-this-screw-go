@@ -1,25 +1,29 @@
+import { ClientBase } from "pg";
+import format from "pg-format";
+
 import StepRepository from "../domain/step/StepRepository";
 import StepEntity from "../domain/step/StepEntity";
-import { dbType } from "../db";
+import { queryType, transactionType } from "../db";
 class StepDBRepository implements StepRepository {
 
-    db;
+    query;
+    transaction;
     
-    constructor(db: dbType) {
-        this.db = db;
+    constructor(query: queryType, transaction: transactionType) {
+        this.query = query;
+        this.transaction = transaction;
     }
     
     async addStep(step: StepEntity): Promise<number> {
-        const dbo = await this.addStepToDB(step);
+        const id = await this.addStepToDB(step) as number;
 
-        const id = StepEntity.fromDboAdd(dbo);
         return id;
     }
 
     async getStep(id: number): Promise<StepEntity> {
-        const dbo: DboGetStep = await this.getStepFromDB(id);
+        const stepEntity = await this.getStepFromDB(id);
 
-        return StepEntity.fromDboGet(dbo)[0];
+        return stepEntity;
     }
 
     async getSteps(): Promise<StepEntity[]> {
@@ -28,23 +32,72 @@ class StepDBRepository implements StepRepository {
         return StepEntity.fromDboGet(dbo);
     }
 
-    addStepToDB(step: StepEntity) {
-        return this.db.query(
-            "INSERT INTO steps(tags, image) VALUES ($1, $2) RETURNING id",
-            [step.tags, step.image]
-        );
+    async addStepToDB(step: StepEntity) {
+
+        return this.transaction(async (client: ClientBase) => {
+            try {
+                const dboAddStep = await client.query(
+                    "INSERT INTO Steps(image) VALUES ($1) RETURNING id",
+                    [step.image]
+                );
+                const stepId = dboAddStep.rows[0].id;
+                
+                const dboTags = this.parseInputTags(step.tags);
+                const dboAddTags = await client.query(format(
+                    "INSERT INTO tags(tag) VALUES %L RETURNING id", 
+                    dboTags), 
+                []);
+                const tagIds = dboAddTags.rows.map(row => row.id);
+            
+                const dboStepTagIds = tagIds.map(tagId => ([stepId, tagId]));
+                await client.query(format(
+                    "INSERT INTO StepTags(stepId, tagId) VALUES %L", 
+                    dboStepTagIds), 
+                []);
+
+                return stepId;
+            } catch (e) {
+                console.error(e);
+                throw e;
+            }
+        });
+
     }
 
-    getStepFromDB(id: number) {
-        return this.db.query(
-            "SELECT * FROM steps WHERE id = $1",
-            [id]
+    parseInputTags(inputTags: string): string[][] {
+        return inputTags
+            .replace("/ +/g", " ")
+            .toLowerCase()
+            .split(",")
+            .map(tag => tag.trim())
+            .filter(tag => tag)
+            .map(tag => [tag]);
+    }
+
+    async getStepFromDB(stepId: number) {
+        const dboStep = await this.query(
+            "SELECT * FROM Steps WHERE id = $1",
+            [stepId]
         );
+        
+        const stepEntity = StepEntity.fromDboGet(dboStep)[0];
+
+        const tagsDbo = await this.query(
+            `SELECT Tags.tag as tag
+            FROM Tags
+            JOIN StepTags ON StepTags.tagId = Tags.id
+            WHERE StepTags.stepId = $1`,
+            [stepId]
+        );
+
+        stepEntity.setTagsFromDbo(tagsDbo);
+
+        return stepEntity;
     }
 
     getStepsFromDB() {
-        return this.db.query(
-            "SELECT * FROM steps",
+        return this.query(
+            "SELECT * FROM Steps",
             []
         );
     }

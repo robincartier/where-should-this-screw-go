@@ -1,17 +1,17 @@
 import Server from "./server";
 
-import StepDataAdapter from "./repository/StepDBRepository";
+import StepDBRepository from "./repository/StepDBRepository";
 import StepUseCases from "./domain/step/StepUseCases";
 import StepHTTPInterface from "./interface/StepHTTPInterface";
-import db from "./db";
+import { query, transaction } from "./db";
 
 const server = new Server();
 
 server.initServer();
 
-const stepDataAdapter = new StepDataAdapter(db);
+const stepDBRepository = new StepDBRepository(query, transaction);
 
-const stepUseCases = new StepUseCases(stepDataAdapter);
+const stepUseCases = new StepUseCases(stepDBRepository);
 
 new StepHTTPInterface(stepUseCases, server);
 

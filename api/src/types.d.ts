@@ -16,6 +16,12 @@ declare global {
         }[]
     }
 
+    type DboGetTags = {
+        rows: { 
+            tag: string,
+        }[]
+    }
+
     export interface PostStepRequest extends Request {
         file: Express.Multer.File,
         body: { tags: string, id: number }

@@ -51,9 +51,15 @@ class Step {
         };
     }
 
-    static fromDboAdd(dbo: DboPostStep) {
-        return dbo.rows[0].id;
+    setTagsFromDbo(tagsDbo: DboGetTags) {
+        const tags = tagsDbo.rows.map(row => row.tag).toString();
+
+        this.tags = tags;
     }
+
+    // static fromDboAdd(dbo: DboPostStep) {
+    //     return dbo.rows[0].id;
+    // }
 
     static fromDboGet(dbo: DboGetStep) {
         return dbo.rows.map(row => (
