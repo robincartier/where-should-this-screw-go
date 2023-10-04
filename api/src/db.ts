@@ -17,10 +17,10 @@ const query = (text: string, params: (string | number | boolean)[]) => {
     }
 };
 
-const transaction = async (queries: (query: ClientBase) => Promise<unknown>) => {
+const transaction = async <T>(queries: (query: ClientBase) => Promise<T>) => {
     
     let client;
-    let dbo: unknown;
+    let dbo: T;
 
     try {
         client = await pool.connect();

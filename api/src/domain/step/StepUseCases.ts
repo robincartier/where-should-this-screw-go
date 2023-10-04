@@ -9,15 +9,6 @@ class StepUseCases {
         this.repository = repository;
     }
 
-    parseInputTags(tags: string): string[] {
-        return tags
-            .replace("/ +/g", " ")
-            .toLowerCase()
-            .split(",")
-            .map(tag => tag.trim())
-            .filter(tag => tag);
-    }
-
     async addStep(step: StepEntity) {
         try {
             const id = await this.repository.addStep(step);
@@ -26,6 +17,7 @@ class StepUseCases {
     
             return addedStepEntity;
         } catch (error) {
+            console.error(error);
             throw ERRORS.INTERNAL;
         }
     }
@@ -36,6 +28,7 @@ class StepUseCases {
     
             return stepsEntities;
         } catch (error) {
+            console.error(error);
             throw ERRORS.INTERNAL;
         }
     }

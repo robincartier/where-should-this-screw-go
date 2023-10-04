@@ -17,15 +17,11 @@ class StepHTTPInterface implements StepInterface {
     }
 
     async addStep(step: StepEntity): Promise<StepEntity> {
-        const stepEntity = await this.domain.addStep(step);
-
-        return stepEntity;
+        return this.domain.addStep(step);
     }
 
     async getSteps(): Promise<StepEntity[]> {
-        const stepEntities = await this.domain.getSteps();
-
-        return stepEntities;
+        return this.domain.getSteps();
     }
 
     initStepRouting() {

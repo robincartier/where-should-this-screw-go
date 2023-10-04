@@ -1,6 +1,12 @@
+-- drop table steptags ;
+
+-- drop table tags ;
+
+-- drop table steps ;
+
 CREATE TABLE Tags(
   id INT Primary Key Generated Always as Identity,
-  tag VARCHAR(50) NOT NULL
+  tag VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Steps(

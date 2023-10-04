@@ -1,7 +1,7 @@
 import { ERRORS } from "../../error";
 
 class Step {
-    constructor({ image, tags, id }: { image: Base64, tags: string, id: number }) {
+    constructor({ image, tags = [], id }: { image: Base64, tags?: string[], id: number }) {
         this._tags = tags;
         this._image = image;
         this._id = id;
@@ -31,11 +31,22 @@ class Step {
         this._id = id;
     }
 
+    static parseInputTags(inputTags: string): string[] {
+        return inputTags
+            .replace("/ +/g", " ")
+            .toLowerCase()
+            .split(",")
+            .map(tag => tag.trim())
+            .filter(tag => tag);
+    }
+
     static fromDto(dto: PostStepRequest) {
         try {
+            const tags = Step.parseInputTags(dto.body.tags);
+
             return new Step({
                 image: dto.file.buffer as unknown as Base64,
-                tags: dto.body.tags,
+                tags,
                 id: dto.body.id,
             });
         } catch (error) {
@@ -51,21 +62,20 @@ class Step {
         };
     }
 
+    appendTags(...tags: string[]) {
+        this._tags.push(...tags);
+    }
+
     setTagsFromDbo(tagsDbo: DboGetTags) {
-        const tags = tagsDbo.rows.map(row => row.tag).toString();
+        const tags = tagsDbo.rows.map(row => row.tag);
 
         this.tags = tags;
     }
-
-    // static fromDboAdd(dbo: DboPostStep) {
-    //     return dbo.rows[0].id;
-    // }
 
     static fromDboGet(dbo: DboGetStep) {
         return dbo.rows.map(row => (
             new Step({
                 image: row.image.toString("base64") as Base64,
-                tags: row.tags,
                 id: row.id
             })
         ));

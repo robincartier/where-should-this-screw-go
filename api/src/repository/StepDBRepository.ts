@@ -15,26 +15,7 @@ class StepDBRepository implements StepRepository {
     }
     
     async addStep(step: StepEntity): Promise<number> {
-        const id = await this.addStepToDB(step) as number;
-
-        return id;
-    }
-
-    async getStep(id: number): Promise<StepEntity> {
-        const stepEntity = await this.getStepFromDB(id);
-
-        return stepEntity;
-    }
-
-    async getSteps(): Promise<StepEntity[]> {
-        const dbo: DboGetStep = await this.getStepsFromDB();
-
-        return StepEntity.fromDboGet(dbo);
-    }
-
-    async addStepToDB(step: StepEntity) {
-
-        return this.transaction(async (client: ClientBase) => {
+        return this.transaction<number>(async (client: ClientBase) => {
             try {
                 const dboAddStep = await client.query(
                     "INSERT INTO Steps(image) VALUES ($1) RETURNING id",
@@ -42,11 +23,18 @@ class StepDBRepository implements StepRepository {
                 );
                 const stepId = dboAddStep.rows[0].id;
                 
-                const dboTags = this.parseInputTags(step.tags);
+                const dboTags = step.tags;
                 const dboAddTags = await client.query(format(
-                    "INSERT INTO tags(tag) VALUES %L RETURNING id", 
-                    dboTags), 
+                    `with i as (
+                        INSERT INTO tags(tag) VALUES %L ON CONFLICT (tag) DO NOTHING RETURNING id
+                    )
+                    SELECT id FROM i
+                    UNION ALL
+                    SELECT id FROM tags WHERE tag in (%L)
+                    ORDER BY id`, 
+                    dboTags.map(tag => [tag]), dboTags), 
                 []);
+
                 const tagIds = dboAddTags.rows.map(row => row.id);
             
                 const dboStepTagIds = tagIds.map(tagId => ([stepId, tagId]));
@@ -64,17 +52,7 @@ class StepDBRepository implements StepRepository {
 
     }
 
-    parseInputTags(inputTags: string): string[][] {
-        return inputTags
-            .replace("/ +/g", " ")
-            .toLowerCase()
-            .split(",")
-            .map(tag => tag.trim())
-            .filter(tag => tag)
-            .map(tag => [tag]);
-    }
-
-    async getStepFromDB(stepId: number) {
+    async getStep(stepId: number): Promise<StepEntity> {
         const dboStep = await this.query(
             "SELECT * FROM Steps WHERE id = $1",
             [stepId]
@@ -95,11 +73,30 @@ class StepDBRepository implements StepRepository {
         return stepEntity;
     }
 
-    getStepsFromDB() {
-        return this.query(
+    async getSteps() {
+        const dboSteps = await this.query(
             "SELECT * FROM Steps",
             []
         );
+
+        const stepEntities = StepEntity.fromDboGet(dboSteps);
+        
+        // TODO find a cleaner way
+        const tagsByStepDbo = await this.query(
+            `SELECT Tags.tag as tag, StepTags.stepId as stepId 
+            FROM Tags, StepTags 
+            WHERE StepTags.tagId = Tags.id`,
+            []
+        );
+
+        tagsByStepDbo.rows.forEach(row => {
+            const stepEntity = stepEntities.find(entity => entity.id === row.stepid);
+            if (!stepEntity) return;
+            
+            stepEntity.appendTags(row.tag);
+        });
+
+        return stepEntities;
     }
 }
 

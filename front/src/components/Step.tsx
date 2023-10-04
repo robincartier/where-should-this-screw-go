@@ -2,7 +2,7 @@ import "../style/Step.css";
 
 type StepType = {
     id: number
-    tags: string,
+    tags: string[],
     image: string,
 }
 
@@ -11,7 +11,7 @@ function Step({ step }: { step: StepType }) {
         <li className="step">
             <img src={`data:image/png;base64,${step.image}`}/>
             <p>
-                {step.tags}
+                {step.tags.toString()}
             </p>
         </li>
     );
